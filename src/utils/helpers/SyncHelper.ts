@@ -2,8 +2,10 @@ import { Constants } from '../../constants/constants';
 import { CustomMessages } from '../../constants/customMessages';
 import { FunctionConstant } from '../../constants/functionConstant';
 import createSearchRequest from '../../service/payment/CreateTransactionSearchRequest';
-import { AmountPlannedType, ApplicationsType, PaymentTransactionType, PaymentType, ReportSyncType } from '../../types/Types';
+import getTransaction from '../../service/payment/GetTransactionData';
+import { ActionType, AmountPlannedType, ApplicationsType, PaymentTransactionType, PaymentType, ReportSyncType } from '../../types/Types';
 import multiMid from '../../utils/config/MultiMid';
+import paymentActions from '../PaymentActions';
 import paymentService from '../PaymentService';
 import paymentUtils from '../PaymentUtils';
 import commercetoolsApi from '../api/CommercetoolsApi';
@@ -391,6 +393,63 @@ const getUpdateAmount = (transaction: Partial<PaymentTransactionType>, refundAmo
     return returnAmount;
 };
 
+const getMissingPaymentDetails = async () => {
+    const midCredentials = {
+        merchantId: process.env.PAYMENT_GATEWAY_MERCHANT_ID,
+        merchantKeyId: process.env.PAYMENT_GATEWAY_MERCHANT_KEY_ID,
+        merchantSecretKey: process.env.PAYMENT_GATEWAY_MERCHANT_SECRET_KEY,
+    };
+    let multiMidArray;
+    multiMidArray = await multiMid.getAllMidDetails();
+    multiMidArray.push(midCredentials);
+    const paymentData = await commercetoolsApi.getAllPayments();
+    if (0 < paymentData?.results.length) {
+        for (let paymentDataIndex = 0; paymentDataIndex < paymentData.results?.length; paymentDataIndex++) {
+            const currentPaymentObject = paymentData.results[paymentDataIndex];
+            const paymentMethod = currentPaymentObject?.paymentMethodInfo?.method;
+            if (Constants.CLICK_TO_PAY === paymentMethod || Constants.GOOGLE_PAY === paymentMethod || Constants.APPLE_PAY === paymentMethod) {
+                const customFields = currentPaymentObject.custom?.fields;
+                if (!customFields.isv_cardExpiryMonth || !customFields.isv_cardExpiryYear || !customFields.isv_maskedPan || !customFields.isv_cardType) {
+                    const transactionId = currentPaymentObject?.transactions[0]?.interactionId;
+                    if (transactionId) {
+                        for (let midIndex = 0; midIndex < multiMidArray.length; midIndex++) {
+                            try {
+                                let getTransactionDataResponse = await getTransaction.getTransactionData(transactionId, null, multiMidArray[midIndex]);
+                                if (getTransactionDataResponse
+                                    && Constants.HTTP_OK_STATUS_CODE === getTransactionDataResponse.httpCode
+                                    && getTransactionDataResponse?.cardFieldGroup) {
+                                    let dataActions = paymentActions.cardDetailsActions(getTransactionDataResponse);
+                                    await syncPaymentAndAddressDetails(dataActions, currentPaymentObject, getTransactionDataResponse);
+                                    break;
+                                }
+                            } catch (exception) {
+                                paymentUtils.logExceptionData(__filename, 'FuncGetMissingPaymentDetails', '', exception, '', '', '');
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const syncPaymentAndAddressDetails = async (dataActions: Partial<ActionType>[], currentPaymentObject: PaymentType, getTransactionDataResponse: any): Promise<void> => {
+    if (currentPaymentObject?.id) {
+        const cartDetails = await paymentService.getCartDetailsByPaymentId(currentPaymentObject?.id);
+        if (cartDetails && 'Active' === cartDetails.cartState && cartDetails?.id && cartDetails?.version) {
+            await commercetoolsApi.updateCartByPaymentId(cartDetails.id, currentPaymentObject?.id, cartDetails.version, getTransactionDataResponse);
+        }
+        if (dataActions && currentPaymentObject?.version) {
+            const updateObject = {
+                actions: dataActions,
+                id: currentPaymentObject.id,
+                version: currentPaymentObject.version,
+            };
+            await commercetoolsApi.syncVisaCardDetails(updateObject);
+        }
+    }
+}
+
 export default {
     setSecurityCodePresent,
     retrieveSyncResponse,
@@ -400,5 +459,7 @@ export default {
     runSyncUpdateCaptureAmount,
     updateDecisionSyncService,
     processApplicationResponse,
-    processRunSyncUpdateCaptureAmount
+    processRunSyncUpdateCaptureAmount,
+    getMissingPaymentDetails,
+    syncPaymentAndAddressDetails
 }

@@ -240,14 +240,12 @@ const createEnrollResponseActions = (response: any, updatePaymentObj: PaymentTyp
     }
     return action;
 };
-
 /**
 * Generates actions based on payer authentication response.
 * 
 * @param {ConsumerAuthenticationInformationType} response - The payer authentication response.
 * @returns {ActionType[]} - Array of actions.
 */
-
 const payerAuthActions = (response: Partial<ConsumerAuthenticationInformationType>): Partial<ActionType>[] => {
     let action: Partial<ActionType>[] = [];
     try {

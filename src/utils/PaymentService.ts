@@ -1116,30 +1116,18 @@ const getAuthResponse = (paymentResponse: PtsV2PaymentsPost201Response | any, tr
 };
 
 const getCartData = async (paymentResponse: any, updatePaymentObj: PaymentType) => {
-  const maxAttempts = 3;
-  const delayDuration = 1000;
   let cartDetails: any;
-  let getTransactionDataResponse = await getTransaction.getTransactionData(paymentResponse, updatePaymentObj);
+  const transactionId = paymentResponse?.transactionId;
+  let getTransactionDataResponse = await getTransaction.getTransactionData(transactionId, updatePaymentObj, null);
   if (Constants.HTTP_SUCCESS_STATUS_CODE === paymentResponse.httpCode
     && getTransactionDataResponse
     && Constants.HTTP_OK_STATUS_CODE === getTransactionDataResponse.httpCode
     && getTransactionDataResponse?.cardFieldGroup) {
     cartDetails = getTransactionDataResponse;
-  } else {
-    for (let i = 0; i < maxAttempts; i++) {
-      getTransactionDataResponse = await getTransaction.getTransactionData(paymentResponse, updatePaymentObj);
-      await new Promise(resolve => setTimeout(resolve, delayDuration));
-      if (Constants.HTTP_SUCCESS_STATUS_CODE === paymentResponse.httpCode
-        && getTransactionDataResponse
-        && Constants.HTTP_OK_STATUS_CODE === getTransactionDataResponse.httpCode
-        && getTransactionDataResponse?.cardFieldGroup) {
-        cartDetails = getTransactionDataResponse;
-        break;
-      }
-    }
   }
   return cartDetails;
 };
+
 export default {
   evaluateTokenCreation,
   getOMServiceResponse,

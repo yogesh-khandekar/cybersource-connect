@@ -491,7 +491,6 @@ const syncVisaCardDetails = async (visaUpdateObject: VisaUpdateType): Promise<Pa
     if (visaUpdateObject && visaUpdateObject?.id) {
       const client = getClient();
       if (client) {
-
         const requestBuilder = createRequestBuilder({
           projectKey: process.env.CT_PROJECT_KEY,
         });
@@ -1207,6 +1206,28 @@ const getDiscountCodes = async (discountId: string) => {
   return getDiscountResponse;
 };
 
+const getAllPayments = async () => {
+  let getAllPaymentsResponse = null;
+  const client = getClient();
+  if (client) {
+    const requestBuilder = createRequestBuilder({
+      projectKey: process.env.CT_PROJECT_KEY,
+    });
+    const uri = requestBuilder.payments.parse({ sort: [{ by: Constants.LAST_MODIFIED_AT, direction: Constants.DESC_ORDER }] }).build()
+    const channelsRequest = {
+      uri: uri,
+      method: 'GET',
+    };
+    const getAllPaymentsResponseObject = await client.execute(channelsRequest);
+    if (getAllPaymentsResponseObject?.body) {
+      getAllPaymentsResponse = getAllPaymentsResponseObject.body;
+    }
+  } else {
+    paymentUtils.logData(__filename, 'FuncGetAllPayments', Constants.LOG_INFO, '', CustomMessages.ERROR_MSG_COMMERCETOOLS_CONNECT);
+  }
+  return getAllPaymentsResponse;
+}
+
 export default {
   queryCartById,
   queryOrderById,
@@ -1232,5 +1253,6 @@ export default {
   retrieveCustomObjectByContainer,
   updateCustomerToken,
   retrieveCustomerByCustomField,
-  getDiscountCodes
+  getDiscountCodes,
+  getAllPayments
 };

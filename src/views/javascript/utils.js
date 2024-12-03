@@ -121,3 +121,5 @@ export const validateWhiteListEndPoints = (url) => {
   }
   return urlValidated;
 }
+
+export const validPathRegex = /^\/paymentDetails\?id=[a-fA-F0-9\-]{36}$/;

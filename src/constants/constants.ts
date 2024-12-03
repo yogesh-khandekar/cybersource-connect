@@ -181,7 +181,7 @@ export abstract class Constants {
   //Function Arrays
   static readonly UPDATE_AMOUNT_RESPONSE_FUNCTIONS = ['FuncGetCaptureResponse', 'FuncGetRefundData', 'FuncGetAuthReversalResponse'];
   static readonly GET_CONFIG_BY_PAYMENT_OBJECT_FUNCTIONS = ['FuncGetTransactionData', 'FuncGetFlexKeys', 'FuncGetPayerAuthSetupData', 'FuncGetAuthReversalResponse', 'FuncGetAuthorizationResponse', 'FuncGetCaptureResponse', 'FuncGetRefundData'];
-  static readonly GET_CONFIG_BY_MID_CREDENTIALS_FUNCTIONS = ['FuncGetTransactionSearchResponse', 'FuncGetConversionDetails', 'FuncGetPublicKeys', 'FuncGetTransientTokenDataResponse', 'FuncWebhookSubscriptionResponse', 'FuncGetKeyGenerationResponse', 'FuncGetCreateWebhookSubscriptionResponse', 'FuncDeleteWebhookSubscriptionResponse'];
+  static readonly GET_CONFIG_BY_MID_CREDENTIALS_FUNCTIONS = ['FuncGetTransactionSearchResponse', 'FuncGetConversionDetails', 'FuncGetPublicKeys', 'FuncGetTransientTokenDataResponse', 'FuncWebhookSubscriptionResponse', 'FuncGetKeyGenerationResponse', 'FuncGetCreateWebhookSubscriptionResponse', 'FuncDeleteWebhookSubscriptionResponse','FuncGetTransactionData'];
 
   //default cards
   static readonly UC_ALLOWED_CARD_NETWORKS = ['VISA', 'MASTERCARD', 'AMEX'];

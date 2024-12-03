@@ -44,7 +44,6 @@ export abstract class CustomMessages {
     static readonly EXCEPTION_UPDATE_CUSTOMER_API = 'An exception occurred while updating a Customer';
     static readonly EXCEPTION_MSG_CUSTOMER_OBJECT = 'An exception occurred while fetching customer object';
 
-
     //Error messages
     static readonly ERROR_MSG_ADD_TRANSACTION_DETAILS = 'There was an error while adding transaction details, please try again';
     static readonly ERROR_MSG_APPLICATION_DETAILS = 'Unable to fetch transaction application details';
@@ -127,5 +126,4 @@ export abstract class CustomMessages {
     static readonly ERROR_MSG_PROCESSING_SUBSCRIPTION = 'Error in processing subscription';
     static readonly ERROR_MSG_SUBSCRIPTION_ALREADY_EXIST = 'Subscription Already Exists';
     static readonly ERROR_MSG_UNABLE_TO_UPDATE_CUSTOMER_TOKEN = 'An error occurred while updating the card from notification';
-
 }

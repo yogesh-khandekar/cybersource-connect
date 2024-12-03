@@ -309,7 +309,7 @@ const getDeviceInformation = async (paymentObj: PaymentType | null, customerObj:
  * @param {boolean} payerAuthMandateFlag - Flag indicating whether payer authentication is mandated.
  * @returns {Promise<any>} - The consumer authentication information.
  */
-const getConsumerAuthenticationInformation = async (resourceObj: PaymentType, service: string, isSaveToken: boolean, payerAuthMandateFlag: boolean): Promise<any> => {
+const getConsumerAuthenticationInformation = (resourceObj: PaymentType, service: string, isSaveToken: boolean, payerAuthMandateFlag: boolean): any => {
   const { isv_payerAuthenticationTransactionId, isv_payerAuthenticationPaReq, isv_cardinalReferenceId, isv_tokenAlias, isv_savedToken } = resourceObj?.custom?.fields || {};
   const consumerAuthenticationInformation = {} as Ptsv2paymentsConsumerAuthenticationInformation;
   if (Constants.VALIDATION === service) {
@@ -318,7 +318,7 @@ const getConsumerAuthenticationInformation = async (resourceObj: PaymentType, se
   } else if (Constants.STRING_ENROLL_CHECK === service) {
     consumerAuthenticationInformation.referenceId = isv_cardinalReferenceId;
     consumerAuthenticationInformation.returnUrl = process.env.PAYMENT_GATEWAY_3DS_RETURN_URL;
-    if (payerAuthMandateFlag || (paymentUtils.toBoolean(process.env.PAYMENT_GATEWAY_SCA_CHALLENGE) && !isv_savedToken && isv_tokenAlias && !isSaveToken)) {
+    if (payerAuthMandateFlag || (paymentUtils.toBoolean(process.env.PAYMENT_GATEWAY_SCA_CHALLENGE) && !isv_savedToken && isv_tokenAlias && isSaveToken)) {
       consumerAuthenticationInformation.challengeCode = Constants.PAYMENT_GATEWAY_PAYER_AUTH_CHALLENGE_CODE;
     }
   }

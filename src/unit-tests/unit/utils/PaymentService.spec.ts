@@ -8,12 +8,12 @@ import paymentService from '../../../utils/PaymentService';
 import unit from '../../JSON/unit.json';
 import AddTokenServiceConst from '../../const/AddTokenServiceConst';
 import PaymentAuthorizationServiceConstAP from '../../const/ApplePay/PaymentAuthorizationServiceConstAP';
-import PaymentAuthorizationServiceVsConst from '../../const/ClickToPay/PaymentAuthorizationServiceVsConst';
 import PaymentAuthorizationServiceConstCC from '../../const/CreditCard/PaymentAuthorizationServiceConstCC';
 import PaymentCaptureServiceConstCC from '../../const/CreditCard/PaymentCaptureServiceConstCC';
-import GetTransactionDataConst from '../../const/GetTransactionDataConst';
 import PaymentHandlerConst from '../../const/PaymentHandlerConst';
 import PaymentServiceConst from '../../const/PaymentServiceConst';
+import PaymentAuthorizationServiceVsConst from '../../const/ClickToPay/PaymentAuthorizationServiceVsConst';
+import GetTransactionDataConst from '../../const/GetTransactionDataConst';
 
 test.serial('Get OM Service Response', async (t: any) => {
   let result: any = paymentService.getOMServiceResponse(PaymentServiceConst.getOMServiceResponsePaymentResponse, PaymentServiceConst.getOMServiceResponseTransactionDetail, '123', 0);

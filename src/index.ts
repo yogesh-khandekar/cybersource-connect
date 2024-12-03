@@ -20,6 +20,7 @@ import paymentUtils from './utils/PaymentUtils';
 import paymentValidator from './utils/PaymentValidator'
 import commercetoolsApi from './utils/api/CommercetoolsApi';
 import resourceHandler from './utils/config/ResourceHandler';
+import syncHelper from './utils/helpers/SyncHelper';
 
 let errorMessage = '';
 let successMessage = '';
@@ -612,6 +613,9 @@ const handleDecisionSync = async (_req: any, res: any): Promise<void> => {
  */
 const handleSync = async (_req: any, res: any): Promise<void> => {
   const syncResponse = await paymentHandler.handleSync();
+  if (process.env.PAYMENT_GATEWAY_RUN_SYNC) {
+    await syncHelper.getMissingPaymentDetails();
+  }
   orderSuccessMessage = syncResponse.message;
   orderErrorMessage = syncResponse.error;
   res.statusCode = Constants.HTTP_REDIRECT_STATUS_CODE;
@@ -665,4 +669,3 @@ const handleCaptureContext = async (req: any, res: any): Promise<void> => {
 if (Constants.STRING_AWS === process.env.PAYMENT_GATEWAY_SERVERLESS_DEPLOYMENT) {
   exports.handler = serverless(app.server);
 }
-
