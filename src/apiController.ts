@@ -3,7 +3,7 @@ import { CustomMessages } from './constants/customMessages';
 import captureContext from './service/payment/CaptureContextService';
 import flexKeys from './service/payment/FlexKeys';
 import getCardByInstrument from './service/payment/GetCardByInstrumentId';
-import keyVerification from './service/payment/GetPublicKeys';
+import keyVerification from './service/payment/getPublicKeys';
 import { ActionResponseType, PaymentTransactionType, PaymentType } from './types/Types';
 import paymentActions from './utils/PaymentActions';
 import paymentHandler from './utils/PaymentHandler';
